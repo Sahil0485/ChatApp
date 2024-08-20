@@ -1,15 +1,22 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 const Message = ({ message }) => {
 
+    const scroll = useRef();
+    const { authUser, selectedUser } = useSelector(store => store.user);
+    useEffect(() => {
+        scroll.current?.scrollIntoView({ behaviour: "smooth" });
+    }, [message]);
+
     return (
         <div>
-            <div className="chat chat-end">
+            <div ref={scroll} className={`chat ${authUser?._id === message?.senderId ? 'chat-end' : 'chat-start'}`}>
                 <div className="chat-image avatar">
                     <div className="w-10 rounded-full">
                         <img
-                            alt="Tailwind CSS chat bubble component"
-                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                            alt="Profile"
+                            src={`${authUser?._id === message?.senderId ? authUser?.profilePhoto : selectedUser?.profilePhoto}`}
                         />
                     </div>
                 </div>

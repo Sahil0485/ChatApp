@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import SendInput from './SendInput'
 import Messages from './Messages'
+import { useDispatch } from 'react-redux'
+import { setSelectedUser } from '../redux/userSlice'
 
 const MessageContainer = ({ user }) => {
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        return () => dispatch(setSelectedUser(null));
+    }, []);
 
     if (user) {
         return (
@@ -25,7 +32,7 @@ const MessageContainer = ({ user }) => {
         )
     } else {
         return (
-            <div className='min-w-96' ></div>
+            <div className='min-w-96'></div>
         )
     }
 }
