@@ -5,7 +5,14 @@ import { useDispatch, useSelector } from 'react-redux'
 const OtherUser = ({ user }) => {
 
     const dispatch = useDispatch();
-    const { selectedUser } = useSelector(store => store.user);
+    const { selectedUser, onlineUsers } = useSelector(store => store.user);
+    const isOnline = onlineUsers?.includes(user?._id);
+    const getFirstLetter = (str) => {
+        if (str && str.length > 0) {
+            return str.charAt(0).toUpperCase();
+        }
+        return '';
+    }
     const selectedUserHandler = async (user) => {
         dispatch(setSelectedUser(user));
     }
@@ -13,9 +20,9 @@ const OtherUser = ({ user }) => {
     return (
         <div>
             <div onClick={() => { selectedUserHandler(user) }} className={` ${selectedUser?._id === user._id ? 'bg-slate-500 text-white' : ''} flex gap-3 p-1 items-center text-neutral-600  hover:bg-slate-500 hover:text-white rounded cursor-pointer`}>
-                <div className='avatar online'>
+                <div className={`avatar ${isOnline ? 'online' : ''}`}>
                     <div className='w-12 rounded-full'>
-                        <img src={user?.profilePhoto} alt="User Image" />
+                        <img src={user?.profilePhoto} alt={getFirstLetter(user.fullName)} />
                     </div>
                 </div>
                 <div className='flex flex-col flex-1'>
