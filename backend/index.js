@@ -6,10 +6,10 @@ const userRoute = require("./routes/userRoute.js");
 const messageRoute = require("./routes/messageRoute.js");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const port = process.env.PORT;
+const port = process.env.PORT || 8080; // Add default port
 
-// Creatin Socket for live chating
-const { Server } = require("socket.io");
+// Import socket handling
+const { initSocket } = require("./socket.js");
 const { createServer } = require("http");
 const server = createServer(app);
 
@@ -23,40 +23,14 @@ const corsOption = {
 };
 app.use(cors(corsOption));
 
-// Creating socket connection
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+// Initialize Socket.IO
+initSocket(server);
 
 // All routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/message", messageRoute);
 
-//Creating Socket
-const userSocketMap = {};
-
-io.on("connection", (socket) => {
-  console.log("User Connected", socket.id);
-
-  const userId = socket.handshake.query.userId;
-  if (userId != undefined) {
-    userSocketMap[userId] = socket.id;
-  }
-
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  socket.on("disconnect", () => {
-    console.log("User Disconnected", socket.id);
-    delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
-  });
-});
-
-//If socket is not in use change server.listen to app.listen
+// Start the server
 server.listen(port, () => {
   console.log(`App is listening at port ${port}`);
 });
